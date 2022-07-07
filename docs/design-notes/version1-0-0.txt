@@ -1,0 +1,37 @@
+GoldyBot Design Ideas
+
+ - Used by anyone that is a Captain
+ - Optional as this is not required
+
+Adding Completed Match
+/addmatch [UMN TEAM] [OPPONENT TEAM] [SERIES]
+[SERIES] is formatted as UMN-OPP
+
+Checking Team Data
+/getdata [TEAM]
+This should pull all data from the last 3 months
+
+Deleting Last Completed Match
+/deletelastmatch [UMN TEAM] 
+
+Delete Outdated Data
+/deleteoutdated
+To conserve memory, any matchup that occurred beyond 3 months should be deleted from the database
+
+Add Roster --OPTIONAL
+/addroster [TEAM] [P1] [P2] [P3] [Sub1] [Sub2] [COACH]
+If entry == -, then disregard that parameter
+
+Edit Roster --OPTIONAL
+/editroster [TEAM] [P1] [P2] [P3] [Sub1] [Sub2] [COACH]
+If entry == -, disregard
+
+Delete Roster --OPTIONAL
+/deleteroster [TEAM]
+Get Matchup Data
+/getmatchupdata [UMN TEAM] [OPPONENT TEAM]
+_
+All roles should be able to QUERY (casters, players, coaches, community members)
+
+The roles that can ADD/EDIT/DELETE data:
+Captains, Coaches, Admins
