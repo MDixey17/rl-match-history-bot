@@ -1,11 +1,16 @@
 import discord
+import os
 
-TOKEN = 'OTk0NzM4NDg0NzMwNDE3MzEz.GskNCF.3JAxRtDT2AtSWrZ2doN48SvywLf-VjSob2iWnI'
 client = discord.Client()
 
 @client.event
 async def on_ready():
     print('Logged in as {0.user}'.format(client))
 
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
 
-client.run(TOKEN)
+
+client.run(os.getenv('TOKEN'))
