@@ -204,4 +204,4 @@ async def getmatchupdata(ctx, team1, team2):
     else:
         await ctx.send(embed=get_nodata_embed())
 
-bot.run('OTk0NzM4NDg0NzMwNDE3MzEz.GIsUpT.nQ79_FKceqsZ-2eUx7n0GrNePge_qgxL2kEamE') # Replace with bot token
+bot.run('TOKEN HERE') # Replace with bot token
