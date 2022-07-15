@@ -19,6 +19,7 @@ def get_help_embed():
     embed.add_field(name="!reset", value="Delete all matchup data.\n", inline=False)
     embed.add_field(name="!getdata [TEAM]", value="Retrieve all data for TEAM.\n", inline=False)
     embed.add_field(name="!getmatchupdata [UMN TEAM] [OPPONENT TEAM]", value="Retrieve all data between UMN and Opponent.\n", inline=False)
+    embed.add_field(name="!list", value="Retrieve all teams that are stored in the database.\n", inline=False)
     return (embed)
 
 def get_start_embed():
@@ -43,7 +44,7 @@ def get_reset_embed():
     return (embed)
 
 def get_nodata_embed():
-    embed = discord.Embed(title="GoldyRL - No Data Found", description="I wasn't able to find any data with those arguments!\n", color=red_color)
+    embed = discord.Embed(title="GoldyRL - No Data Found", description="I wasn't able to find any data with that command!\n", color=red_color)
     return (embed)
 
 def get_nopermission_embed():
@@ -204,4 +205,42 @@ async def getmatchupdata(ctx, team1, team2):
     else:
         await ctx.send(embed=get_nodata_embed())
 
-bot.run('TOKEN HERE') # Replace with bot token
+@bot.command()
+# ROLES: Everyone
+async def list(ctx):
+    getDataQueryOne = "SELECT DISTINCT(team_one) FROM match_history"
+    getDataQueryTwo = "SELECT DISTINCT(team_two) FROM match_history"
+    cur.execute(getDataQueryOne)
+    teamOneData = cur.fetchall()
+    cur.execute(getDataQueryTwo)
+    teamTwoData = cur.fetchall()
+    # Check for data
+    if (len(teamOneData) == 0 or len(teamTwoData) == 0):
+        await ctx.send(embed=get_nodata_embed())
+        return
+    
+    embed = get_results_embed()
+    # Extract data
+    teamOneOnlyData = []
+    teamTwoOnlyData = []
+    for row in teamOneData:
+        t1 = row[0]
+        teamOneOnlyData.append(t1)
+    for row in teamTwoData:
+        t2 = row[0]
+        teamTwoOnlyData.append(t2)
+    # Remove duplicates in teamTwoData
+    for team in teamTwoOnlyData[:]:
+        if team in teamOneOnlyData:
+            teamTwoOnlyData.remove(team)
+    # Sort data alphabetically
+    allTeamData = teamOneOnlyData + teamTwoOnlyData
+    allTeamData.sort()
+    # Add to Embed and send
+    for team in allTeamData:
+        embed.add_field(name=team, value="=========================================", inline=False)
+    await ctx.send(embed=embed)
+        
+
+
+bot.run('TOKEN') # Replace with bot token
