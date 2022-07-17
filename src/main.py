@@ -5,6 +5,7 @@ from datetime import date
 
 bot = commands.Bot(command_prefix="!")
 red_color = int(0x7A0019)
+green_color = int(0x32CD32)
 
 conn = sqlite3.connect("match_results.db")
 cur = conn.cursor()
@@ -13,20 +14,20 @@ insert_query = """INSERT INTO match_history VALUES (?,?,?,?,?);"""
 
 def get_help_embed():
     embed = discord.Embed(title='GoldyRL Accepted Commands', color=red_color)
-    embed.add_field(name="!commands", value="Prints this message", inline=False)
-    embed.add_field(name="!addmatch [UMN TEAM] [OPPONENT] [UMN SERIES SCORE] [OPPONENT SERIES SCORE]", value="Add a completed match.\n", inline=False)
-    embed.add_field(name="!deletelastmatch [UMN TEAM]", value="Delete the last match for a UMN Team.\n", inline=False)
+    embed.add_field(name="!cmd", value="Prints this message", inline=False)
+    embed.add_field(name="!addmatch [TEAM 1] [TEAM 2] [TEAM 1 SERIES SCORE] [TEAM 2 SERIES SCORE]", value="Add a completed match.\n", inline=False)
+    embed.add_field(name="!deletelastmatch [TEAM]", value="Delete the last match for a specific team.\n", inline=False)
     embed.add_field(name="!reset", value="Delete all matchup data.\n", inline=False)
     embed.add_field(name="!getdata [TEAM]", value="Retrieve all data for TEAM.\n", inline=False)
-    embed.add_field(name="!getmatchupdata [UMN TEAM] [OPPONENT TEAM]", value="Retrieve all data between UMN and Opponent.\n", inline=False)
+    embed.add_field(name="!getmatchupdata [TEAM 1] [TEAM 2]", value="Retrieve all data between any two teams that are scheduled to play each other.\n", inline=False)
     embed.add_field(name="!list", value="Retrieve all teams that are stored in the database.\n", inline=False)
     return (embed)
 
 def get_start_embed():
-    return (discord.Embed(title='GoldyRL', description="Hey there! I'm GoldyRL, the Discord bot designed to store all UMN Esports matches in the last three months. If you don't know how to use me, type !commands in this channel. Otherwise, type away.", color=red_color))
+    return (discord.Embed(title='GoldyRL', description="Hey there! I'm GoldyRL, the Discord bot designed to store all UMN Esports matches. If you don't know how to use me, type !cmd in this channel. Otherwise, type away.", color=red_color))
 
 def get_success_embed(cmd):
-    embed = discord.Embed(title='GoldyRL - Successful Command', description="Command was successfully executed and the database has been updated!\n", color=red_color)
+    embed = discord.Embed(title='GoldyRL - Successful Command', description="Command was successfully executed and the database has been updated!\n", color=green_color)
     embed.add_field(name="Command", value=cmd, inline=False)
     return (embed)
 
@@ -36,7 +37,7 @@ def get_fail_embed(cmd):
     return (embed)
 
 def get_results_embed():
-    embed = discord.Embed(title="GoldyRL - Retrieved Data", description="I found some data that you requested!\n", color=red_color)
+    embed = discord.Embed(title="GoldyRL - Retrieved Data", description="I found some data that you requested!\n", color=green_color)
     return (embed)
 
 def get_reset_embed():
@@ -49,6 +50,16 @@ def get_nodata_embed():
 
 def get_nopermission_embed():
     embed = discord.Embed(title="GoldyRL - Invalid Permissions", description="Sorry, but you don't have the permissions to execute that command!\n", color=red_color)
+    return (embed)
+
+def get_error_embed():
+    embed = discord.Embed(title="GoldyRL - ERROR", description="Sorry, but that command wasn't inputted correctly. Please ensure you have the correct format. Here are some common errors:\n", color=red_color)
+    embed.add_field(name="Team name with multiple words (Ex: UMN Gold)", value="Wrap the full team name in double quotes.\n", inline=False)
+    embed.add_field(name="Missing arguments", value="Be sure to make sure you have all the required commands, but not too many. Use !commands if you need help.\n", inline=False)
+    return (embed)
+
+def get_nopermission_embed():
+    embed = discord.Embed(title="GoldyRL - Missing Permission", description="Sorry, but it seems that some permissions are missing to run that command.\n", color=red_color)
     return (embed)
 
 @bot.event
@@ -82,9 +93,30 @@ async def on_message(message):
         return
     await bot.process_commands(message)
 
+@bot.event
+async def on_command_error(ctx, error):
+    
+    if isinstance(error, commands.CommandNotFound):
+        return
+    
+    elif isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send(embed=get_error_embed())
+
+    elif isinstance(error, commands.BadArgument):
+        await ctx.send(embed=get_error_embed())
+
+    elif isinstance(error, commands.TooManyArguments):
+        await ctx.send(embed=get_error_embed())
+
+    elif isinstance(error, commands.UserInputError):
+        await ctx.send(embed=get_error_embed())
+
+    elif isinstance(error, commands.MissingPermissions):
+        await ctx.send(embed=get_nopermission_embed())
+
 @bot.command()
 # ROLES = everyone
-async def commands(ctx):
+async def cmd(ctx):
     await ctx.send(embed=get_help_embed())
 
 @bot.command()
@@ -243,4 +275,4 @@ async def list(ctx):
         
 
 
-bot.run('TOKEN') # Replace with bot token
+bot.run('TOKEN HERE') # Replace with bot token
