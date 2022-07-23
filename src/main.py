@@ -3,7 +3,7 @@ from discord.ext import commands
 import sqlite3
 from datetime import date
 
-bot = commands.Bot(command_prefix="!")
+bot = commands.Bot(command_prefix="/")
 red_color = int(0x7A0019)
 green_color = int(0x32CD32)
 
@@ -14,13 +14,13 @@ insert_query = """INSERT INTO match_history VALUES (?,?,?,?,?);"""
 
 def get_help_embed():
     embed = discord.Embed(title='GoldyRL Accepted Commands', color=red_color)
-    embed.add_field(name="!cmd", value="Prints this message", inline=False)
-    embed.add_field(name="!addmatch [TEAM 1] [TEAM 2] [TEAM 1 SERIES SCORE] [TEAM 2 SERIES SCORE]", value="Add a completed match.\n", inline=False)
-    embed.add_field(name="!deletelastmatch [TEAM]", value="Delete the last match for a specific team.\n", inline=False)
-    embed.add_field(name="!reset", value="Delete all matchup data.\n", inline=False)
-    embed.add_field(name="!getdata [TEAM]", value="Retrieve all data for TEAM.\n", inline=False)
-    embed.add_field(name="!getmatchupdata [TEAM 1] [TEAM 2]", value="Retrieve all data between any two teams that are scheduled to play each other.\n", inline=False)
-    embed.add_field(name="!list", value="Retrieve all teams that are stored in the database.\n", inline=False)
+    embed.add_field(name="/cmd", value="Prints this message", inline=False)
+    embed.add_field(name="/addmatch [TEAM 1] [TEAM 2] [TEAM 1 SERIES SCORE] [TEAM 2 SERIES SCORE]", value="Add a completed match.\n", inline=False)
+    embed.add_field(name="/deletelastmatch [TEAM]", value="Delete the last match for a specific team.\n", inline=False)
+    embed.add_field(name="/reset", value="Delete all matchup data.\n", inline=False)
+    embed.add_field(name="/getdata [TEAM]", value="Retrieve all data for TEAM.\n", inline=False)
+    embed.add_field(name="/getmatchupdata [TEAM 1] [TEAM 2]", value="Retrieve all data between any two teams that are scheduled to play each other.\n", inline=False)
+    embed.add_field(name="/list", value="Retrieve all teams that are stored in the database.\n", inline=False)
     return (embed)
 
 def get_start_embed():
@@ -84,7 +84,11 @@ async def on_ready():
         conn.commit()
 
     match_history_channel = discord.utils.get(bot.get_all_channels(), name='match-history')
-    await match_history_channel.send(embed=get_start_embed())
+    start_embed = get_start_embed()
+    if type(match_history_channel.last_message) == type(None):
+        print('Logged in as {0.user}'.format(bot))
+        return
+    await match_history_channel.send(embed=start_embed)
     print('Logged in as {0.user}'.format(bot))
 
 @bot.event
@@ -275,4 +279,4 @@ async def list(ctx):
         
 
 
-bot.run('TOKEN HERE') # Replace with bot token
+bot.run('OTk0NzM4NDg0NzMwNDE3MzEz.GKRAWw.SVpPSdSv04wt8NpQ2lpF-e4euN-wq6i6oWk2gY') # Replace with bot token
