@@ -279,4 +279,4 @@ async def list(ctx):
         
 
 
-bot.run('OTk0NzM4NDg0NzMwNDE3MzEz.GKRAWw.SVpPSdSv04wt8NpQ2lpF-e4euN-wq6i6oWk2gY') # Replace with bot token
+bot.run('TOKEN') # Replace with bot token
